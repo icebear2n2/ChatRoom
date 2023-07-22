@@ -1,6 +1,7 @@
 package com.icebear2n2.chatroom.user.controller;
 
 import com.icebear2n2.chatroom.user.domain.entity.User;
+import com.icebear2n2.chatroom.user.domain.request.ConnectRequest;
 import com.icebear2n2.chatroom.user.domain.request.LoginRequest;
 import com.icebear2n2.chatroom.user.domain.request.SignupRequest;
 import com.icebear2n2.chatroom.user.service.UserService;
@@ -9,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -55,4 +53,39 @@ public class UserController {
         }
         return "redirect:/main";
     }
+
+    @GetMapping("/join/{id}")
+    public String joinRoom(@PathVariable("id") Long id, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/user/login";
+        }
+
+        ConnectRequest connectRequest = new ConnectRequest(userId, id);
+        try {
+            service.joinRoom(connectRequest);
+            return "redirect:/{id}";
+        } catch (RuntimeException e) {
+
+            return "redirect:/error";
+        }
+    }
+    @PostMapping("/leave/{id}")
+    public String leaveRoom(@PathVariable("id") Long id, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/user/login";
+        }
+
+        ConnectRequest connectRequest = new ConnectRequest(userId, id);
+        try {
+            service.leaveRoom(connectRequest);
+
+            return "redirect:/main";
+        } catch (RuntimeException e) {
+
+            return "redirect:/error";
+        }
+    }
+
 }

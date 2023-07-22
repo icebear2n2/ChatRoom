@@ -3,16 +3,14 @@ package com.icebear2n2.chatroom.room.domain.entity;
 import com.icebear2n2.chatroom.chat.domain.entity.Message;
 import com.icebear2n2.chatroom.config.domain.entity.UserRoom;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Table(name = "rooms")
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

@@ -172,10 +172,10 @@
 
             $.ajax({
                 type : "post",
-                url : "/chat/confirmPwd/"+roomId,
+                url : "/confirmPwd/"+roomId,
                 async : false,
                 data : {
-                    "roomPwd" : $enterPwd
+                    "password" : $enterPwd
                 },
                 success : function(result){
                     // console.log("동작완료")
@@ -183,7 +183,7 @@
 
                     if(result){
                         if (chkRoomUserCnt(roomId)) {
-                            location.href = "/chat/room?roomId="+roomId;
+                            location.href = "/user/join/"+roomId;
                         }
                     }else{
                         alert("비밀번호가 틀립니다. \n 비밀번호를 확인해주세요")
@@ -223,9 +223,41 @@
 
 
     </script>
+    <script th:inline="javascript">
+        function joinPrivateRoom(roomId) {
+            // Here, you can handle the logic for joining private rooms if needed
+            // For example, you can show a modal for entering the password
+            // and then proceed to join the room if the password is correct.
+            // For simplicity, let's just redirect to the room URL for now.
+            window.location.href = '/chat/room?roomId=' + roomId;
+        }
+
+        function joinRoom(roomId) {
+            $.ajax({
+                type: "GET",
+                url: "/user/join/" + roomId,
+                success: function (data) {
+                    // Redirect to the corresponding room page after joining the room
+                    window.location.href = "/" + roomId;
+                },
+                error: function (error) {
+                    // Redirect to the error page if there's an error
+                    window.location.href = "/error";
+                }
+            });
+        }
+    </script>
+
+
+
+
     <style>
+        body {
+            background: url(https://github.com/icebear2n2/Chat/assets/87232411/f574d81a-80a3-4f7e-8bd5-236a222cad67);
+        }
         a {
             text-decoration: none;
+            color: white;
         }
 
         #table {
@@ -247,17 +279,21 @@
         span.input-group-text.input-password-show {
             height: 40px;
         }
+        tr {
+            cursor: pointer;
+            color: white;
+        }
 
     </style>
 </head>
 <body>
 <div class="container">
     <div class="container">
-        <h2>채팅방 리스트</h2>
+        <h2 style="color: white;">채팅방 리스트</h2>
 
         <div th:if="${user == null}" class="row">
             <div class="col">
-                <a href="/chatlogin"><button type="button" class="btn btn-primary">로그인하기</button></a>
+                <a href="/user/login"><button type="button" class="btn btn-info"  style="background-color: #1A1C1D; color: white" >로그인하기</button></a>
             </div>
         </div>
         <h5 th:if="${user != null}">
@@ -273,15 +309,10 @@
                 <th scope="col">채팅방 설정</th>
             </tr>
             <th:block th:fragment="content">
-
-                <tr th:each="room : ${list}">
-                    <span class="hidden" th:id="${room.getRoomName()}"></span>
-                    <td th:if="${room.isPrivate()}">
-                        <a href="#enterRoomModal" data-bs-toggle="modal" data-target="#enterRoomModal" th:data-id="${room.getId()}">[[${room.roomName}]]</a>
-                    </td>
-                    <td th:if="${!room.isPrivate()}">
-                        <!-- thymeleaf 의 변수를 onclick 에 넣는 방법 -->
-                        <a th:href="@{/chat/room(roomId=${room.getId()})}" th:roomId="${room.getId()}" onclick="return chkRoomUserCnt(this.getAttribute('roomId'));">[[${room.roomName}]]</a>
+                <tr th:each="room : ${list}" th:data-room-id="${room.getId()}">
+                    <td>
+                        <a th:if="${room.isPrivate()}" href="#enterRoomModal" data-bs-toggle="modal" data-bs-target="#enterRoomModal" th:data-id="${room.getId()}" onclick="joinPrivateRoom([[${room.getId()}]])">[[${room.roomName}]]</a>
+                        <a th:if="${!room.isPrivate()}" href="#" th:onclick="'joinRoom(\'' + ${room.getId()} + '\');'">[[${room.roomName}]]</a>
                     </td>
                     <td>
                         <span th:if="${room.isPrivate()}">
@@ -289,20 +320,20 @@
                         </span>
                     </td>
                     <td>
-                        <span class="badge bg-primary rounded-pill">[[${room.userCount}]]/[[${room.maxUserCount}]]</span>
+                        <span class="badge rounded-pill" style="background-color: #1A1C1D">[[${room.userCount}]]/[[${room.maxUserCount}]]</span>
                     </td>
                     <td>
                         <span th:if="${room.private}">비공개</span>
                         <span th:unless="${room.private}">공개</span>
                     </td>
                     <td>
-                        <button class="btn btn-primary btn-sm" id="configRoom" data-bs-toggle="modal" data-bs-target="#confirmPwdModal" th:data-id="${room.getId()}">채팅방 설정</button>
+                        <button class="btn btn-sm btn-info"  style="background-color: #1A1C1D; color: white" id="configRoom" data-bs-toggle="modal" data-bs-target="#confirmPwdModal" th:data-id="${room.getId()}">채팅방 설정</button>
                     </td>
                 </tr>
             </th:block>
 
         </table>
-        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#roomModal">방 생성</button>
+        <button style="background-color: #1A1C1D; color: white" type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#roomModal">방 생성</button>
 
     </div>
 </div>
@@ -435,7 +466,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="chRoomName" class="col-form-label">채팅방 이름 변경</label>
-                    <input type="text" class="form-control" id="chRoomName" name="chRoomName">
+                    <input type="text" class="form-control" id="chRoomName" name="roomName">
                 </div>
                 <div class="mb-3">
                     <label for="chRoomUserCnt" class="col-form-label">채팅방 인원 변경</label>
@@ -443,7 +474,7 @@
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="chSecret">
-                    <input type="hidden" name="secretChk" id="chSecretChk" value="">
+                    <input type="hidden" name="isPrivate" id="chSecretChk" value="">
                     <label class="form-check-label" for="secret">
                         채팅방 잠금
                     </label>

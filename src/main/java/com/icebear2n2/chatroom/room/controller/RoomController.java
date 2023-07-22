@@ -33,8 +33,43 @@ public class RoomController {
 //    }
     @PostMapping("/main")
     public String createRoom(@ModelAttribute RoomRequest request) {
-      service.createRoom(request);
-
+        Room room = service.createRoom(request);
+        Long id = room.getId();
         return "redirect:/main";
     }
+
+    @GetMapping("{id}")
+    public String chattingRoom(@PathVariable Long id, Model model, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        String username = (String) session.getAttribute("username");
+        if (userId == null) {
+            // 로그인되지 않은 사용자가 채팅방에 접속하려고 할 때 처리할 로직 작성
+            // 예를 들어 로그인 페이지로 리다이렉트하거나 에러 페이지를 표시할 수 있습니다.
+            return "redirect:/login";
+        }
+
+        // id에 따른 채팅방 접근 권한 체크 로직 작성
+        // 예를 들어, 특정 조건에 따라 허용된 채팅방만 접근하도록 할 수 있습니다.
+
+        model.addAttribute("name", username);
+        model.addAttribute("id", id);
+        return "/room/chattingRoom";
+    }
+
+    @PostMapping("/confirmPwd/{id}")
+    @ResponseBody
+    public boolean confirmPwd(@PathVariable("id") Long roomId, @RequestParam String password){
+
+        // 넘어온 roomId 와 roomPwd 를 이용해서 비밀번호 찾기
+        // 찾아서 입력받은 roomPwd 와 room pwd 와 비교해서 맞으면 true, 아니면  false
+        return service.confirmPwd(roomId, password);
+    }
+
+    @GetMapping("/chat/chkUserCnt/{roomId}")
+    @ResponseBody
+    public boolean chUserCnt(@PathVariable Long roomId){
+
+        return service.chkRoomUserCnt(roomId);
+    }
+
 }

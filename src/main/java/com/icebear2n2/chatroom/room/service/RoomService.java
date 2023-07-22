@@ -33,4 +33,22 @@ public class RoomService {
     public void deleteRoom(Long roomId) {
        repository.deleteById(roomId);
     }
+
+    public boolean confirmPwd(Long roomId, String password) {
+//        String pwd = chatRoomMap.get(roomId).getRoomPwd();
+        Room room = repository.findById(roomId).orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " +roomId));
+        return password.equals(room.getPassword());
+
+    }
+
+    public boolean chkRoomUserCnt(Long roomId){
+        Room room = repository.findById(roomId).orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " +roomId));
+
+
+        if (room.getUserCount() + 1 > room.getMaxUserCount()) {
+            return false;
+        }
+
+        return true;
+    }
 }
