@@ -4,6 +4,7 @@ import com.icebear2n2.chatroom.room.domain.entity.Room;
 import com.icebear2n2.chatroom.room.domain.request.RoomRequest;
 import com.icebear2n2.chatroom.room.domain.response.RoomResponse;
 import com.icebear2n2.chatroom.room.service.RoomService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,8 +33,8 @@ public class RoomController {
 //    }
     @PostMapping("/main")
     public String createRoom(@ModelAttribute RoomRequest request) {
-        service.createRoom(request);
+      service.createRoom(request);
+
         return "redirect:/main";
     }
-
 }
