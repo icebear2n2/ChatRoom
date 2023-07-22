@@ -56,6 +56,19 @@ public class RoomController {
         return "/room/chattingRoom";
     }
 
+    @GetMapping("/delete/{id}")
+    public String deleteRoom(@PathVariable("id") Long id) {
+
+        service.deleteRoom(id);
+        return "redirect:/main";
+    }
+
+    @PutMapping("/update/{id}")
+    public String updateRoom(@PathVariable("id") Long id, @ModelAttribute RoomRequest request) {
+        service.update(id, request);
+        return "redirect:/main";
+    }
+
     @PostMapping("/confirmPwd/{id}")
     @ResponseBody
     public boolean confirmPwd(@PathVariable("id") Long roomId, @RequestParam String password){
