@@ -137,6 +137,7 @@
     function disconnect() {
         console.log(username + ":" + $("#opinion").text());
         websocket.close();
+        getUserList();
     }
 
     function send() {
@@ -174,16 +175,16 @@
         var str = username + ": 님이 방을 나가셨습니다.";
         websocket.send(str);
         delete usernameMap[websocket.id];
+
+        // Call getUserList() to update the user list after the user leaves the room
+        disconnect();
     }
 
     // 웹소켓 연결이 열릴 때 호출되는 함수
     function onOpen(evt) {
         var str = username + ": 님이 입장하셨습니다.";
         websocket.send(str);
-        usernameMap[websocket.id] = {
-            username: username,
-            joinedAt: Date.now(),
-        };
+        getUserList();
     }
 
     // 웹소켓에서 수신된 메시지를 처리하는 함수
@@ -199,13 +200,6 @@
             console.log('arr[' + i + ']: ' + arr[i]);
         }
 
-        var sessionIdList = data.split(","); // Split the received data into an array of session IDs
-
-        for (var i = 0; i < sessionIdList.length; i++) {
-            sessionId = sessionIdList[i];
-            updateUserList(sessionId);
-            console.log(sessionId);
-        }
 
         var cur_session = username;
 
@@ -222,7 +216,7 @@
         if (message == " 님이 입장하셨습니다.") {
             // message = sessionId + "님이 입장하셨습니다.";
             var message1 = "<div style='text-align: center;'>" + sessionId + " 님이 입장하셨습니다." + "</div>";
-            updateUserList(sessionId, 'join');
+            getUserList();
             message1 += "<br/>";
             message = null;
             $("#msgArea").append(message1);
@@ -231,11 +225,10 @@
         if (message == " 님이 방을 나가셨습니다.") {
             // message = sessionId + "님이 입장하셨습니다.";
             message1 = "<div style='text-align: center;'>" + sessionId + " 님이 방을 나가셨습니다." + "</div>";
-            updateUserList(sessionId, 'leave');
             message1 += "<br/>";
             message = null;
             $("#msgArea").append(message1);
-
+            getUserList();
         }
 
 
@@ -269,35 +262,28 @@
         });
     }
 
-    function updateUserList(sessionId, action) {
-        // Check if the user already exists in the list
-        const index = userList.indexOf(sessionId);
-        console.log("userList: ", userList);
-        if (action === 'join') {
-            // If the user doesn't exist in the list, add them
-            if (index === -1) {
-                userList.push(sessionId);
+    function getUserList() {
+        $.ajax({
+            type: "GET",
+            url: "/chat/userList",
+            data: {
+                "roomId": [[${id}]]
+            },
+            success: function (data) {
+                const userListContainer = document.getElementById("userList");
+                userListContainer.innerHTML = ""; // Clear the current list
+
+                for (let i = 0; i < data.length; i++) {
+                    const userItem = document.createElement("tr");
+                    const userCell = document.createElement("td");
+                    userCell.textContent = data[i];
+                    userItem.appendChild(userCell);
+                    userListContainer.appendChild(userItem);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Failed to get user list:", error);
             }
-        } else if (action === 'leave') {
-            // If the user exists in the list, remove them
-            if (index !== -1) {
-                userList.splice(index, 1);
-            }
-        }
-
-        // Update the user list in the HTML
-        const userListContainer = document.getElementById("userList");
-        userListContainer.innerHTML = ""; // Clear the current list
-
-        userList.forEach(function (sessionId) {
-            const userItem = document.createElement("tr");
-            const userCell = document.createElement("td");
-
-            // Get the username from the mapping object using the sessionId
-            const username = usernameMap[sessionId] || sessionId;
-            userCell.textContent = username;
-            userItem.appendChild(userCell);
-            userListContainer.appendChild(userItem);
         });
     }
 

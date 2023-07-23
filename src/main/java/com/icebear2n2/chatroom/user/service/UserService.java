@@ -60,20 +60,28 @@ public class UserService {
     public void leaveRoom(ConnectRequest request) {
         User user = userRepository.findById(request.userId()).orElseThrow(() -> new RuntimeException("NOT FOUND USER BY " + request.userId()));
         Room room = roomRepository.findById(request.roomId()).orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " + request.roomId()));
-        List<Message> messagesToDelete = messageRepository.findByRoomAndSender(room, user);
-        messageRepository.deleteAll(messagesToDelete);
 
+        // Find the UserRoom entity that matches both the user and the room
+        UserRoom userRoom = userRoomRepository.findByRoomAndUser(room, user);
 
-        UserRoom userRoom = new UserRoom();
-        userRoom.setUser(user);
-        userRoom.setRoom(room);
-        userRoomRepository.delete(userRoom);
+        if (userRoom != null) {
+            // Delete the associated messages sent by the user in the room
+            List<Message> messagesToDelete = messageRepository.findByRoomAndSender(room, user);
+            messageRepository.deleteAll(messagesToDelete);
 
-        if (room.getUserCount() != 0) {
-            room.setUserCount(room.getUserCount() - 1);
-            roomRepository.save(room);
+            // Delete the UserRoom entry
+            userRoomRepository.delete(userRoom);
+
+            // Update the user count in the room if needed
+            if (room.getUserCount() != 0) {
+                room.setUserCount(room.getUserCount() - 1);
+                roomRepository.save(room);
+            }
+        } else {
+            // If the UserRoom is not found, you can throw an exception or handle the situation accordingly.
+            // For example:
+            throw new RuntimeException("UserRoom entry not found for user and room.");
         }
-
     }
 
     public UserResponse findById(Long id) {

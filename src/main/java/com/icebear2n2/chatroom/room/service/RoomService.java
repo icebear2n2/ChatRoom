@@ -12,6 +12,7 @@ import com.icebear2n2.chatroom.user.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,4 +71,16 @@ public class RoomService {
         return true;
     }
 
+    public List<String> getUserList(Long roomId) {
+
+        Room room = repository.findById(roomId).orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " + roomId));
+        List<User> users = room.getUsers().stream().map(UserRoom::getUser).toList();
+
+        List<String> list = new ArrayList<>();
+        for (User user : users) {
+            list.add(user.getUsername());
+        }
+
+        return list;
+    }
 }

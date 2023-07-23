@@ -46,7 +46,7 @@ public class RoomController {
         if (userId == null) {
             // 로그인되지 않은 사용자가 채팅방에 접속하려고 할 때 처리할 로직 작성
             // 예를 들어 로그인 페이지로 리다이렉트하거나 에러 페이지를 표시할 수 있습니다.
-            return "redirect:/login";
+            return "redirect:/user/login";
         }
 
         // id에 따른 채팅방 접근 권한 체크 로직 작성
@@ -80,6 +80,13 @@ public class RoomController {
     public boolean chUserCnt(@PathVariable("roomId") Long roomId) {
 
         return service.chkRoomUserCnt(roomId);
+    }
+
+    @GetMapping("/chat/userList")
+    @ResponseBody
+    public List<String> userList(Long roomId) {
+
+        return service.getUserList(roomId);
     }
 
 }
