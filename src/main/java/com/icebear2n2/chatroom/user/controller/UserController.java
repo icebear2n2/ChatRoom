@@ -103,7 +103,7 @@ public class UserController {
     public String logout(HttpSession session) {
 
         // 세션에서 사용자 ID를 가져와서 uid에 저장
-        Integer uid = (Integer) session.getAttribute("userId");
+        Long uid = (Long) session.getAttribute("userId");
 
         // uid가 존재하면, 세션 무효화
         if (uid != null) {

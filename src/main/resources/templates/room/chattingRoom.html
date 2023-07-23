@@ -10,7 +10,16 @@
     <link rel="stylesheet" href="../css/style.css">
 
 </head>
+
 <body>
+<div class="userList">
+    <h1>User List</h1>
+    <table>
+        <tbody id="userList">
+        <!-- User list will be populated here using JavaScript -->
+        </tbody>
+    </table>
+</div>
 <div class="floating-chat expand enter">
     <i class="fa fa-comments" aria-hidden="true"></i>
     <div class="chat">
@@ -41,7 +50,8 @@
 
 </body>
 <script th:inline="javascript">
-
+    let userList = [];
+    let usernameMap = {};
     // 서버에서 받아온 name 값으로 초기화
     const username = [[${name}]];
 
@@ -124,7 +134,10 @@
     //         $("#opinion").text('');
     //     }
     // }
-
+    function disconnect() {
+        console.log(username + ":" + $("#opinion").text());
+        websocket.close();
+    }
 
     function send() {
         var content = $("#opinion").text().trim();
@@ -160,12 +173,17 @@
     function onClose(evt) {
         var str = username + ": 님이 방을 나가셨습니다.";
         websocket.send(str);
+        delete usernameMap[websocket.id];
     }
 
     // 웹소켓 연결이 열릴 때 호출되는 함수
     function onOpen(evt) {
         var str = username + ": 님이 입장하셨습니다.";
         websocket.send(str);
+        usernameMap[websocket.id] = {
+            username: username,
+            joinedAt: Date.now(),
+        };
     }
 
     // 웹소켓에서 수신된 메시지를 처리하는 함수
@@ -179,6 +197,14 @@
 
         for (var i = 0; i < arr.length; i++) {
             console.log('arr[' + i + ']: ' + arr[i]);
+        }
+
+        var sessionIdList = data.split(","); // Split the received data into an array of session IDs
+
+        for (var i = 0; i < sessionIdList.length; i++) {
+            sessionId = sessionIdList[i];
+            updateUserList(sessionId);
+            console.log(sessionId);
         }
 
         var cur_session = username;
@@ -196,18 +222,22 @@
         if (message == " 님이 입장하셨습니다.") {
             // message = sessionId + "님이 입장하셨습니다.";
             var message1 = "<div style='text-align: center;'>" + sessionId + " 님이 입장하셨습니다." + "</div>";
+            updateUserList(sessionId, 'join');
             message1 += "<br/>";
             message = null;
             $("#msgArea").append(message1);
         }
-        document.getElementById("msgArea").scrollTop = document.getElementById("msgArea").scrollHeight;
+
         if (message == " 님이 방을 나가셨습니다.") {
             // message = sessionId + "님이 입장하셨습니다.";
-            message1 = sessionId + " 님이 방을 나가셨습니다.";
+            message1 = "<div style='text-align: center;'>" + sessionId + " 님이 방을 나가셨습니다." + "</div>";
+            updateUserList(sessionId, 'leave');
+            message1 += "<br/>";
+            message = null;
             $("#msgArea").append(message1);
 
         }
-        document.getElementById("msgArea").scrollTop = document.getElementById("msgArea").scrollHeight;
+
 
         if (message == undefined) {
             return;
@@ -233,6 +263,42 @@
         }
 
         document.getElementById("msgArea").scrollTop = document.getElementById("msgArea").scrollHeight;
+        window.addEventListener("beforeunload", function () {
+            onClose();
+
+        });
+    }
+
+    function updateUserList(sessionId, action) {
+        // Check if the user already exists in the list
+        const index = userList.indexOf(sessionId);
+        console.log("userList: ", userList);
+        if (action === 'join') {
+            // If the user doesn't exist in the list, add them
+            if (index === -1) {
+                userList.push(sessionId);
+            }
+        } else if (action === 'leave') {
+            // If the user exists in the list, remove them
+            if (index !== -1) {
+                userList.splice(index, 1);
+            }
+        }
+
+        // Update the user list in the HTML
+        const userListContainer = document.getElementById("userList");
+        userListContainer.innerHTML = ""; // Clear the current list
+
+        userList.forEach(function (sessionId) {
+            const userItem = document.createElement("tr");
+            const userCell = document.createElement("td");
+
+            // Get the username from the mapping object using the sessionId
+            const username = usernameMap[sessionId] || sessionId;
+            userCell.textContent = username;
+            userItem.appendChild(userCell);
+            userListContainer.appendChild(userItem);
+        });
     }
 
 </script>
