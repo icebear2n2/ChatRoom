@@ -1,9 +1,17 @@
-@import url('https://fonts.googleapis.com/css?family=Raleway');
+@font-face {
+    font-family: "opensans";
+    src: url("../font/neodgm_code.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Raleway', sans-serif;
+    font-family: "opensans";
+    font-size: medium;
     color: #F2F2F2;
+
 }
 
 #container-login {
@@ -21,10 +29,10 @@ body {
 #container-register {
     background-color: #1D1F20;
     position: relative;
-    top: auto;
+    top: 20%;
     margin: auto;
     width: 340px;
-    height: 480px;
+    height: 540px;
     border-radius: 0.35em;
     box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2);
     text-align: center;
@@ -41,8 +49,8 @@ body {
 }
 
 .lock {
-	position: relative;
-	top: 2px;
+    position: relative;
+    top: 2px;
 }
 
 .input {
@@ -69,6 +77,8 @@ input[type=checkbox] {
 input[type=text] {
     color: #949494;
     margin: 0;
+    font-family: "opensans";
+    font-size: medium;
     background-color: #373b3d;
     border: 1px solid #373b3d;
     padding: 6px 0px;
@@ -82,6 +92,8 @@ input[type=text]:focus {
 input[type=password] {
     color: #949494;
     margin: 0;
+    font-family: "opensans";
+    font-size: medium;
     background-color: #373b3d;
     border: 1px solid #373b3d;
     padding: 6px 0px;
@@ -90,11 +102,14 @@ input[type=password] {
 
 input[type=password]:focus {
     border: 1px solid #373b3d;
+
 }
 
 input[type=email] {
     color: #949494;
     margin: 0;
+    font-family: "opensans";
+    font-size: medium;
     background-color: #373b3d;
     border: 1px solid #373b3d;
     padding: 6px 0px;
@@ -157,6 +172,8 @@ input[type=email]:focus {
 
 input[type=submit] {
     padding: 6px 25px;
+    font-family: "opensans";
+    font-size: medium;
     background: #373E4A;
     color: #C1C3C6;
     font-weight: bold;
@@ -181,6 +198,8 @@ input[type=submit] {
 #register-link {
     margin-top: 10px;
     padding: 6px 25px;
+    font-family: "opensans";
+    font-size: medium;
     background: #373E4A;
     color: #C1C3C6;
     font-weight: bold;

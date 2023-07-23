@@ -4,6 +4,7 @@ import com.icebear2n2.chatroom.user.domain.entity.User;
 import com.icebear2n2.chatroom.user.domain.request.ConnectRequest;
 import com.icebear2n2.chatroom.user.domain.request.LoginRequest;
 import com.icebear2n2.chatroom.user.domain.request.SignupRequest;
+import com.icebear2n2.chatroom.user.domain.response.UserResponse;
 import com.icebear2n2.chatroom.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,9 @@ public class UserController {
     private final UserService service;
 
     @GetMapping("/signup")
-    public String showsignupPage() { return "/user/signup";}
+    public String showsignupPage() {
+        return "/user/signup";
+    }
 
     @PostMapping("/signup")
     public String signup(@ModelAttribute("user") @Validated SignupRequest request, BindingResult result) {
@@ -38,7 +41,9 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String showLoginPage() { return "/user/login"; }
+    public String showLoginPage() {
+        return "/user/login";
+    }
 
     @PostMapping("/login")
     public String login(@ModelAttribute("user") @Validated LoginRequest request, HttpSession session, BindingResult result) {
@@ -64,12 +69,13 @@ public class UserController {
         ConnectRequest connectRequest = new ConnectRequest(userId, id);
         try {
             service.joinRoom(connectRequest);
-            return "redirect:/{id}";
+            return "redirect:/room/{id}";
         } catch (RuntimeException e) {
 
             return "redirect:/error";
         }
     }
+
     @PostMapping("/leave/{id}")
     public String leaveRoom(@PathVariable("id") Long id, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
@@ -86,6 +92,25 @@ public class UserController {
 
             return "redirect:/error";
         }
+    }
+
+    @GetMapping("{id}")
+    public UserResponse getById(@PathVariable("id") Long id) {
+        return service.findById(id);
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+
+        // 세션에서 사용자 ID를 가져와서 uid에 저장
+        Integer uid = (Integer) session.getAttribute("userId");
+
+        // uid가 존재하면, 세션 무효화
+        if (uid != null) {
+            session.invalidate();
+        }
+
+        return "redirect:/user/login";
     }
 
 }

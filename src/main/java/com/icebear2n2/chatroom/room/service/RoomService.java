@@ -1,5 +1,7 @@
 package com.icebear2n2.chatroom.room.service;
 
+import com.icebear2n2.chatroom.chat.domain.entity.Message;
+import com.icebear2n2.chatroom.chat.repository.MessageRepository;
 import com.icebear2n2.chatroom.config.domain.entity.UserRoom;
 import com.icebear2n2.chatroom.config.repository.UserRoomRepository;
 import com.icebear2n2.chatroom.room.domain.entity.Room;
@@ -20,6 +22,8 @@ public class RoomService {
     private final RoomRepository repository;
     private final UserRoomRepository userRoomRepository;
 
+    private final MessageRepository messageRepository;
+
     public Room createRoom(RoomRequest request) {
         return repository.save(request.toEntity());
     }
@@ -34,12 +38,14 @@ public class RoomService {
         Room room = byId.orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " + roomId));
         return new RoomResponse(room);
     }
+
     public void deleteRoom(Long roomId) {
         Room room = repository.findById(roomId).orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " + roomId));
-
         // Delete associated UserRoom entries
         List<UserRoom> userRooms = userRoomRepository.findByRoom(room);
         userRoomRepository.deleteAll(userRooms);
+        List<Message> messagesToDelete = messageRepository.findByRoom(room);
+        messageRepository.deleteAll(messagesToDelete);
 
         // Delete the room
         repository.deleteById(roomId);
@@ -48,13 +54,13 @@ public class RoomService {
 
     public boolean confirmPwd(Long roomId, String password) {
 //        String pwd = chatRoomMap.get(roomId).getRoomPwd();
-        Room room = repository.findById(roomId).orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " +roomId));
+        Room room = repository.findById(roomId).orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " + roomId));
         return password.equals(room.getPassword());
 
     }
 
-    public boolean chkRoomUserCnt(Long roomId){
-        Room room = repository.findById(roomId).orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " +roomId));
+    public boolean chkRoomUserCnt(Long roomId) {
+        Room room = repository.findById(roomId).orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " + roomId));
 
 
         if (room.getUserCount() + 1 > room.getMaxUserCount()) {
@@ -64,17 +70,4 @@ public class RoomService {
         return true;
     }
 
-    public RoomResponse update(Long roomId, RoomRequest request) {
-//        Member member = em.find(Member.class, id);
-//        member.setName(request.name());
-//        member.setAge(request.age());
-//        Member member = memberRepository.findById(id).orElseThrow(() -> new RuntimeException("NOT FOUND MEMBER BY " + id));
-//        member.setAge(request.age());
-//        member.setName(request.name());
-        Room room = repository.findById(roomId).orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " +roomId));
-
-        Room room1 = new Room(roomId, request.roomName(), room.getUserCount(), request.maxUserCount(), request.password(), request.isPrivate(), room.getUsers(), room.getMessages());
-        Room save = repository.save(room1);
-        return new RoomResponse(save);
-    }
 }

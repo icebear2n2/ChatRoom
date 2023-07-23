@@ -4,6 +4,7 @@ import com.icebear2n2.chatroom.chat.domain.entity.Message;
 import com.icebear2n2.chatroom.config.domain.entity.UserRoom;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
 
@@ -21,9 +22,12 @@ public class Room {
 
     private String roomName;
 
+    @ColumnDefault("0")
     private int userCount;
     private int maxUserCount;
     private String password;
+
+    @ColumnDefault("false")
     private boolean isPrivate;
 
     @OneToMany(mappedBy = "room")

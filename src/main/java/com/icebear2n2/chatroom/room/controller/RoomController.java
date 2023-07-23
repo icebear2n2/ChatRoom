@@ -18,6 +18,7 @@ import java.util.List;
 public class RoomController {
 
     private final RoomService service;
+
     @GetMapping("/main")
     public String showMainPage(Model model) {
         List<RoomResponse> all = service.findAll();
@@ -27,7 +28,7 @@ public class RoomController {
     }
 
 
-//    @GetMapping("/room/create")
+    //    @GetMapping("/room/create")
 //    public String showCreateRoomPage(Model model) {
 //
 //    }
@@ -38,7 +39,7 @@ public class RoomController {
         return "redirect:/main";
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/room/{id}")
     public String chattingRoom(@PathVariable Long id, Model model, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         String username = (String) session.getAttribute("username");
@@ -52,6 +53,7 @@ public class RoomController {
         // 예를 들어, 특정 조건에 따라 허용된 채팅방만 접근하도록 할 수 있습니다.
 
         model.addAttribute("name", username);
+        model.addAttribute("userId", userId);
         model.addAttribute("id", id);
         return "/room/chattingRoom";
     }
@@ -63,15 +65,10 @@ public class RoomController {
         return "redirect:/main";
     }
 
-    @PutMapping("/update/{id}")
-    public String updateRoom(@PathVariable("id") Long id, @ModelAttribute RoomRequest request) {
-        service.update(id, request);
-        return "redirect:/main";
-    }
 
     @PostMapping("/confirmPwd/{id}")
     @ResponseBody
-    public boolean confirmPwd(@PathVariable("id") Long roomId, @RequestParam String password){
+    public boolean confirmPwd(@PathVariable("id") Long roomId, @RequestParam String password) {
 
         // 넘어온 roomId 와 roomPwd 를 이용해서 비밀번호 찾기
         // 찾아서 입력받은 roomPwd 와 room pwd 와 비교해서 맞으면 true, 아니면  false
@@ -80,7 +77,7 @@ public class RoomController {
 
     @GetMapping("/chat/chkUserCnt/{roomId}")
     @ResponseBody
-    public boolean chUserCnt(@PathVariable Long roomId){
+    public boolean chUserCnt(@PathVariable("roomId") Long roomId) {
 
         return service.chkRoomUserCnt(roomId);
     }
