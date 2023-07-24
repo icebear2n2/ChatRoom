@@ -1,4 +1,8 @@
 # ChatRoom
+## ERD
+<img src="https://github.com/icebear2n2/ChatRoom/assets/87232411/af0130b2-eac8-4008-8925-c8143cd11a98" width=700>
+
+<br/>
 
 ## Reference
 1. https://github.com/SeJonJ/Spring-WebSocket-WebRTC-Chatting  
