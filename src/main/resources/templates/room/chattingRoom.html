@@ -50,8 +50,8 @@
 
 </body>
 <script th:inline="javascript">
-    let userList = [];
-    let usernameMap = {};
+
+
     // 서버에서 받아온 name 값으로 초기화
     const username = [[${name}]];
 
@@ -137,7 +137,6 @@
     function disconnect() {
         console.log(username + ":" + $("#opinion").text());
         websocket.close();
-        getUserList();
     }
 
     function send() {
@@ -174,8 +173,6 @@
     function onClose(evt) {
         var str = username + ": 님이 방을 나가셨습니다.";
         websocket.send(str);
-        delete usernameMap[websocket.id];
-
         // Call getUserList() to update the user list after the user leaves the room
         disconnect();
     }
@@ -184,7 +181,6 @@
     function onOpen(evt) {
         var str = username + ": 님이 입장하셨습니다.";
         websocket.send(str);
-        getUserList();
     }
 
     // 웹소켓에서 수신된 메시지를 처리하는 함수
@@ -198,6 +194,7 @@
 
         for (var i = 0; i < arr.length; i++) {
             console.log('arr[' + i + ']: ' + arr[i]);
+            getUserList();
         }
 
 
@@ -216,7 +213,6 @@
         if (message == " 님이 입장하셨습니다.") {
             // message = sessionId + "님이 입장하셨습니다.";
             var message1 = "<div style='text-align: center;'>" + sessionId + " 님이 입장하셨습니다." + "</div>";
-            getUserList();
             message1 += "<br/>";
             message = null;
             $("#msgArea").append(message1);
@@ -228,7 +224,6 @@
             message1 += "<br/>";
             message = null;
             $("#msgArea").append(message1);
-            getUserList();
         }
 
 

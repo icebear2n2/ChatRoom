@@ -23,10 +23,9 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
-
     private final UserRoomRepository userRoomRepository;
-
     private final MessageRepository messageRepository;
+
 
     public void signup(SignupRequest request) {
         userRepository.save(request.toEntity());
@@ -44,14 +43,20 @@ public class UserService {
         User user = userRepository.findById(request.userId()).orElseThrow(() -> new RuntimeException("NOT FOUND USER BY " + request.userId()));
         Room room = roomRepository.findById(request.roomId()).orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " + request.roomId()));
 
+        UserRoom existingUserRoom = userRoomRepository.findByRoomAndUser(room, user);
 
-        // Create and save a new UserRoom entity
+        if (existingUserRoom != null) {
+            userRoomRepository.delete(existingUserRoom);
+            room.setUserCount(room.getUserCount() - 1);
+            roomRepository.save(room);
+        }
+
         UserRoom userRoom = new UserRoom();
         userRoom.setUser(user);
         userRoom.setRoom(room);
         userRoomRepository.save(userRoom);
 
-        // Increment the userCount of the room and save it back to the database
+
         room.setUserCount(room.getUserCount() + 1);
         roomRepository.save(room);
     }
@@ -61,25 +66,22 @@ public class UserService {
         User user = userRepository.findById(request.userId()).orElseThrow(() -> new RuntimeException("NOT FOUND USER BY " + request.userId()));
         Room room = roomRepository.findById(request.roomId()).orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " + request.roomId()));
 
-        // Find the UserRoom entity that matches both the user and the room
+
         UserRoom userRoom = userRoomRepository.findByRoomAndUser(room, user);
 
         if (userRoom != null) {
-            // Delete the associated messages sent by the user in the room
             List<Message> messagesToDelete = messageRepository.findByRoomAndSender(room, user);
             messageRepository.deleteAll(messagesToDelete);
 
-            // Delete the UserRoom entry
+
             userRoomRepository.delete(userRoom);
 
-            // Update the user count in the room if needed
+
             if (room.getUserCount() != 0) {
                 room.setUserCount(room.getUserCount() - 1);
                 roomRepository.save(room);
             }
         } else {
-            // If the UserRoom is not found, you can throw an exception or handle the situation accordingly.
-            // For example:
             throw new RuntimeException("UserRoom entry not found for user and room.");
         }
     }
@@ -88,6 +90,4 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("NOT FOUND USER BY " + id));
         return new UserResponse(user);
     }
-
-
 }

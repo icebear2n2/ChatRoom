@@ -16,10 +16,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
         this.chatHandler = chatHandler;
     }
 
-    // Register the ChatHandler as the WebSocket handler
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        // Use registry.addHandler() to register the ChatHandler
-        // with the "/ws/chat" path to handle WebSocket requests
         registry.addHandler(this.chatHandler, "/ws/chat")
                 .setAllowedOrigins("*");
     }

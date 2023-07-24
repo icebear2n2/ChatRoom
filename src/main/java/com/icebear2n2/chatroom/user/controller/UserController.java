@@ -21,7 +21,7 @@ public class UserController {
     private final UserService service;
 
     @GetMapping("/signup")
-    public String showsignupPage() {
+    public String showSignupPage() {
         return "/user/signup";
     }
 
@@ -34,6 +34,7 @@ public class UserController {
         try {
             service.signup(request);
             return "redirect:/user/login";
+
         } catch (RuntimeException e) {
             result.rejectValue("email", "EXIST EMAIL", "FAILED TO SIGNUP USER!!" + e.getMessage());
             return "/user/signup";
@@ -110,7 +111,7 @@ public class UserController {
             session.invalidate();
         }
 
-        return "redirect:/user/login";
+        return "redirect:/main";
     }
 
 }

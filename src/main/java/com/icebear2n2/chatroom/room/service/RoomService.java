@@ -22,7 +22,6 @@ public class RoomService {
 
     private final RoomRepository repository;
     private final UserRoomRepository userRoomRepository;
-
     private final MessageRepository messageRepository;
 
     public Room createRoom(RoomRequest request) {
@@ -32,12 +31,6 @@ public class RoomService {
     public List<RoomResponse> findAll() {
         List<Room> all = repository.findAll();
         return all.stream().map(RoomResponse::new).toList();
-    }
-
-    public RoomResponse findById(Long roomId) {
-        Optional<Room> byId = repository.findById(roomId);
-        Room room = byId.orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " + roomId));
-        return new RoomResponse(room);
     }
 
     public void deleteRoom(Long roomId) {
@@ -54,7 +47,6 @@ public class RoomService {
 
 
     public boolean confirmPwd(Long roomId, String password) {
-//        String pwd = chatRoomMap.get(roomId).getRoomPwd();
         Room room = repository.findById(roomId).orElseThrow(() -> new RuntimeException("NOT FOUND ROOM BY " + roomId));
         return password.equals(room.getPassword());
 

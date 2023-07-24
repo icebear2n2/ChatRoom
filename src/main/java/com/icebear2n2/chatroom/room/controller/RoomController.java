@@ -20,9 +20,13 @@ public class RoomController {
     private final RoomService service;
 
     @GetMapping("/main")
-    public String showMainPage(Model model) {
+    public String showMainPage(Model model, HttpSession session) {
         List<RoomResponse> all = service.findAll();
         System.out.println("all = " + all);
+        Long userId = (Long) session.getAttribute("userId");
+        String username = (String) session.getAttribute("username");
+        model.addAttribute("userId", userId);
+        model.addAttribute("username", username);
         model.addAttribute("list", all);
         return "/main";
     }
