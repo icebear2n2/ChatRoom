@@ -207,3 +207,26 @@ input[type=submit] {
     cursor: pointer;
     border-radius: 3px;
 }
+
+.circle-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px; /* Set the desired size of the circle */
+    height: 42px; /* Set the desired size of the circle */
+    border-radius: 50%; /* Make the circle by setting border-radius to half of the width/height */
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.circle-icon:hover {
+    background-color: #f0f0f0;
+}
+
+.circle-icon i {
+    font-size: 24px; /* Set the desired size of the icon */
+    color: #333; /* Set the color of the icon */
+}
+
+

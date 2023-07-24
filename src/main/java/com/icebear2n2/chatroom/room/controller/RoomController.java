@@ -19,6 +19,11 @@ public class RoomController {
 
     private final RoomService service;
 
+    @GetMapping("/")
+    public String redirectToMain() {
+        return "redirect:/main";
+    }
+
     @GetMapping("/main")
     public String showMainPage(Model model, HttpSession session) {
         List<RoomResponse> all = service.findAll();
