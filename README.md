@@ -1,4 +1,6 @@
-# ChatRoom
+Spring Boot 와 WebSocket을 활용한 채팅방 프로젝트 입니다.
+
+
 ## ERD
 <img src="https://github.com/icebear2n2/ChatRoom/assets/87232411/af0130b2-eac8-4008-8925-c8143cd11a98" width=700>
 
