@@ -11,7 +11,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/ChatRoom?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
-    password: hyun2002
+    password: qwer1234!
   jpa:
     hibernate:
       ddl-auto: none
