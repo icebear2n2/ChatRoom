@@ -1,3 +1,4 @@
+# Chatting Room
 Spring Boot 와 WebSocket을 활용한 채팅방 프로젝트 입니다.
 
 
